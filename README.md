@@ -1,0 +1,1 @@
+docker run --rm steigr/virt-manager start | bash
