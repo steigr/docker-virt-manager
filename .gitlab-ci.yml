@@ -13,8 +13,10 @@ build:
   - develop
   stage: build
   before_script:
+  - echo 1 | tee /proc/sys/net/ipv6/conf/all/forwarding | /proc/sys/net/ipv6/conf/default/forwarding
+  - ip6tables -t nat -A POSTROUTING -o eth0 -s fde4:e91:816d:2::/64 -j MASQUERADE 
   - ip route del default
-  - ip -o -4  a s eth0 | while read line; do echo $line | awk '{print "ip addr del " $4 " dev " $2 }' | sh -x; done
+  - ip -o -4 a s eth0 | while read line; do echo $line | awk '{print "ip addr del " $4 " dev " $2 }' | sh -x; done
   script:
   - docker build -t virt-manager .
   
