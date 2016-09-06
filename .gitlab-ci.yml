@@ -29,7 +29,9 @@ release:
   - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
   script:
   - docker tag virt-manager $DOCKER_USER/virt-manager${CI_BUILD_TAG:+:$CI_BUILD_TAG}
-  - docker push $DOCKER_USER/virt-manager${CI_BUILD_TAG:+:$CI_BUILD_TAG}
+  - ${CI_BUILD_TAG:+docker tag $DOCKER_USER/virt-manager:$CI_BUILD_TAG $DOCKER_USER/virt-manager:latest}
+  - ${CI_BUILD_TAG:+docker push $DOCKER_USER/virt-manager:$CI_BUILD_TAG}
+  - docker push $DOCKER_USER/virt-manager:latest
   - docker rmi virt-manager $DOCKER_USER/virt-manager${CI_BUILD_TAG:+:$CI_BUILD_TAG}
   after_script:
   - docker logout
