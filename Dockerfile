@@ -2,7 +2,7 @@ from debian:sid
 
 run  export DEBIAN_FRONTEND=noninteractive \
  &&  apt-get update \
- &&  apt-get install -y libgl1-mesa-dri libgl1-mesa-glx openssh-client ssh-askpass socat virt-manager virt-manager \
+ &&  ( until apt-get install -y libgl1-mesa-dri libgl1-mesa-glx openssh-client ssh-askpass socat virt-manager virt-manager; do true; done ) \
  &&  apt-get clean \
  &&  rm -rf /var/lib/apt/lists
 

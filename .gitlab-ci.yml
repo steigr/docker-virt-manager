@@ -1,11 +1,13 @@
-image: gitlab/dind:latest
+image: docker:latest
 
 stages:
 - build
 - push
 
-variables:
-  TRACE: TRACE
+before_script:
+- docker info
+- ip route del default
+- ip -o -4 a s eth0 | while read line; do echo $line | awk '{print "ip addr del " $4 " dev " $2 }' | sh -x; done
 
 build:
   only:
@@ -20,9 +22,12 @@ release:
   only:
   - tags
   before_script:
-  - docker login -t $DOCKER_USER -p $DOCKER_PASSWORD
+  - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
   script:
-  - docker tag virt-manager $DOCKER_USER/virt-manager
-  - docker push $DOCKER_USER/virt-manager
+  - docker tag virt-manager $DOCKER_USER/virt-manager${CI_BUILD_TAG:+:$CI_BUILD_TAG}
+  - ${CI_BUILD_TAG:+docker tag $DOCKER_USER/virt-manager:$CI_BUILD_TAG $DOCKER_USER/virt-manager:latest}
+  - ${CI_BUILD_TAG:+docker push $DOCKER_USER/virt-manager:$CI_BUILD_TAG}
+  - docker push $DOCKER_USER/virt-manager:latest
+  - docker rmi virt-manager $DOCKER_USER/virt-manager${CI_BUILD_TAG:+:$CI_BUILD_TAG}
   after_script:
   - docker logout
