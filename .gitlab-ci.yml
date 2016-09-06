@@ -4,14 +4,10 @@ stages:
 - build
 - push
 
-variables:
-  TRACE: TRACE
-
 before_script:
 - docker info
 - ip route del default
 - ip -o -4 a s eth0 | while read line; do echo $line | awk '{print "ip addr del " $4 " dev " $2 }' | sh -x; done
-- printenv
 
 build:
   only:
