@@ -12,6 +12,9 @@ build:
   - tags
   - develop
   stage: build
+  before_script:
+  - ip route del default
+  - ip -o -4 a s eth0 | while read line; do echo $line | awk '{print "ip addr del " $4 " dev " $2 }' | sh -x; done
   script:
   - docker build -t virt-manager .
   
@@ -20,6 +23,8 @@ release:
   only:
   - tags
   before_script:
+  - ip route del default
+  - ip -o -4 a s eth0 | while read line; do echo $line | awk '{print "ip addr del " $4 " dev " $2 }' | sh -x; done
   - docker login -t $DOCKER_USER -p $DOCKER_PASSWORD
   script:
   - docker tag virt-manager $DOCKER_USER/virt-manager
