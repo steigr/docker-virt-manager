@@ -28,8 +28,12 @@ check_tool() {
 	command -v "$tool" >/dev/null || fail "Please install $tool first!"
 }
 
+available_interface() {
+	netstat -in | grep -E "^e" | grep -v "Link#" | awk '{print $1}' | tail -1
+}
+
 set_local_ip() {
-	XIP=$(ifconfig en0 | grep "inet " | awk '{print $2}')
+	XIP=$(ifconfig $(available_interface) | grep "inet " | awk '{print $2}')
 }
 
 forward_x_over_ip() {

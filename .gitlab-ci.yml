@@ -1,0 +1,28 @@
+image: gitlab/dind:latest
+
+stages:
+- build
+- push
+
+variables:
+  TRACE: TRACE
+
+build:
+  only:
+  - tags
+  - develop
+  stage: build
+  script:
+  - docker build -t virt-manager .
+  
+release:
+  stage: push
+  only:
+  - tags
+  before_script:
+  - docker login -t $DOCKER_USER -p $DOCKER_PASSWORD
+  script:
+  - docker tag virt-manager $DOCKER_USER/virt-manager
+  - docker push $DOCKER_USER/virt-manager
+  after_script:
+  - docker logout
